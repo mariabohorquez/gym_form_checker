@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data & Models
+data/images/
+data/labels/
+data/*.zip
+data/*.tar.gz
+data/train/
+data/valid/
+data/test/
+exercise-frame-labelling*/
+models/*.pt
+runs/
+
+# Videos (ignorar videos de prueba pesados, mantener .gitkeep u otros trackers)
+videos/*.mp4
+videos/*.avi
+videos/*.mov
+!videos/.gitkeep
+!videos/demo_2min.mp4
+
+# API keys
+.env
+*.env
+
+# LaTeX auxiliares
+*.aux
+*.out
+*.bbl
+*.blg
+*.log
+missfont.log
+
+# IDEs/OS
+.DS_Store
+.vscode/
+.idea/
+.uv/
