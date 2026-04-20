@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gym Form Checker</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <style>
+        :root {
+            --bg:      #080c14;
+            --surface: #0d1424;
+            --border:  rgba(255,255,255,0.07);
+            --blue:    #4f9cf9;
+            --orange:  #f97316;
+            --green:   #22c55e;
+            --red:     #ef4444;
+            --yellow:  #fbbf24;
+            --text:    #f1f5f9;
+            --muted:   #64748b;
+        }
+
+        .reveal { font-family: 'Inter', sans-serif; }
+
+        .reveal .slides section {
+            text-align: left;
+            padding: 20px 44px 0;
+            overflow: hidden;
+            box-sizing: border-box;
+        }
+
+        /* ── Headings ─────────────────────── */
+        .reveal h1 {
+            font-size: 3.2em;
+            font-weight: 900;
+            color: #ffffff;
+            text-transform: none;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+        .reveal h2 {
+            font-size: 1.7em;
+            font-weight: 700;
+            color: #ffffff;
+            text-transform: none;
+            border-left: 4px solid var(--orange);
+            padding-left: 18px;
+            margin-bottom: 36px;
+        }
+        .reveal h3 {
+            font-size: 1.1em;
+            font-weight: 400;
+            color: var(--muted);
+            text-transform: none;
+        }
+
+        /* ── Body text ────────────────────── */
+        .reveal p, .reveal li {
+            font-size: 1em;
+            line-height: 1.65;
+            color: #cbd5e1;
+        }
+        .reveal ul { list-style: none; padding: 0; }
+        .reveal ul li::before {
+            content: "→ ";
+            color: var(--orange);
+            font-weight: 700;
+        }
+
+        /* ── Title slide ──────────────────── */
+        .title-slide {
+            background: linear-gradient(135deg, #0c1f4a 0%, #071333 60%, #080c14 100%) !important;
+            text-align: center !important;
+            padding: 0 !important;
+        }
+        .title-slide h1 { color: #ffffff; font-size: 3.8em; }
+        .title-slide .subtitle {
+            color: var(--orange);
+            font-size: 1em;
+            font-weight: 600;
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+        .title-slide .author {
+            margin-top: 48px;
+            color: #94a3b8;
+            font-size: 0.85em;
+            line-height: 1.8;
+        }
+        .title-slide .author strong { color: #ffffff; font-size: 1.1em; }
+        .title-slide .tag {
+            display: inline-block;
+            background: rgba(79,156,249,0.12);
+            border: 1px solid rgba(79,156,249,0.3);
+            color: var(--blue);
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-size: 0.75em;
+            margin-top: 36px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Cards / surfaces ─────────────── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px 28px;
+        }
+        .card-accent {
+            background: rgba(249,115,22,0.07);
+            border: 1px solid rgba(249,115,22,0.25);
+            border-radius: 12px;
+            padding: 20px 28px;
+        }
+        .stat {
+            font-size: 2.4em;
+            font-weight: 900;
+            color: var(--orange);
+            line-height: 1;
+        }
+        .stat-label { font-size: 0.78em; color: var(--muted); margin-top: 4px; }
+
+        /* ── Two-column ───────────────────── */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* ── Table ────────────────────────── */
+        .reveal table { width: 100%; border-collapse: collapse; font-size: 0.88em; }
+        .reveal table th {
+            background: rgba(79,156,249,0.12);
+            color: var(--blue);
+            font-weight: 700;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(79,156,249,0.25);
+            text-align: left;
+        }
+        .reveal table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--border);
+            color: #cbd5e1;
+        }
+        .reveal table tr:last-child td { border-bottom: none; }
+        .reveal table tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* ── Badges ───────────────────────── */
+        .badge-green { color: var(--green); font-weight: 700; }
+        .badge-red   { color: var(--red);   font-weight: 700; }
+        .badge-yellow{ color: var(--yellow); font-weight: 700; }
+        .badge-blue  { color: var(--blue);  font-weight: 700; }
+        .badge-orange{ color: var(--orange);font-weight: 700; }
+
+        /* ── Demo buttons ─────────────────── */
+        .demo-btn {
+            background: rgba(79,156,249,0.1);
+            border: 1px solid rgba(79,156,249,0.3);
+            color: #94a3b8;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.82em;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .demo-btn.active {
+            background: var(--blue);
+            border-color: var(--blue);
+            color: #ffffff;
+        }
+        #demo-video {
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            background: #000;
+            display: block;
+            margin-top: 16px;
+            max-height: 380px;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body style="background:#080c14;">
+<div class="reveal">
+<div class="slides">
+
+<!-- ① TÍTULO ──────────────────────────────────────── -->
+<section class="title-slide" data-background-color="#071333">
+    <h1>Gym Form<br>Checker</h1>
+    <p class="subtitle">Pipeline Biomecánico Determinista<br>vs. Clasificadores Deep Learning</p>
+    <p class="author">
+        <strong>María Gabriela Bohórquez</strong><br>
+        Especialización en Inteligencia Artificial · CEIA<br>
+        Facultad de Ingeniería, Universidad de Buenos Aires
+    </p>
+    <span class="tag">Visión por Computadora II · Abril 2026</span>
+</section>
+
+<!-- ② PROBLEMA ────────────────────────────────────── -->
+<section data-background-color="#080c14">
+    <h2>El Problema</h2>
+    <div class="two-col" style="margin-top:10px;">
+        <div>
+            <div class="stat">40–60%</div>
+            <div class="stat-label">de lesiones en levantamiento<br>de pesas vienen de técnica deficiente</div>
+            <div style="margin-top:20px;font-size:0.88em;color:#64748b;line-height:1.8;">
+                ✗ &nbsp;Entrenadores personales: caros y no escalables<br>
+                ✗ &nbsp;Feedback en tiempo real: no existe para el atleta promedio<br>
+                ✓ &nbsp;Smartphones + Cámaras + IA → solución accesible
+            </div>
+            <div class="card" style="margin-top:16px;padding:12px 16px;">
+                <p style="margin:0 0 6px;font-size:0.78em;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.06em;">Objetivo</p>
+                <p style="margin:0;font-size:0.85em;color:#f1f5f9;line-height:1.6;">Automatizar el análisis biomecánico en tiempo real — <span style="color:var(--orange);">Sentadilla · Flexión · Peso Muerto</span></p>
+            </div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;">
+            <img src="../images/real-science-cover.jpg" style="width:100%;border-radius:10px;border:1px solid var(--border);object-fit:cover;max-height:320px;" alt="Biomechanical angle analysis">
+        </div>
+    </div>
+</section>
+
+<!-- ③ PIPELINE ─────────────────────────────────────── -->
+<section data-background-color="#080c14">
+    <h2>Solución: Pipeline de Dos Capas</h2>
+    <svg viewBox="0 0 960 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;margin:8px 0 16px;">
+        <!-- Box 1: Video -->
+        <rect x="2" y="50" width="130" height="90" rx="10" fill="#0d1424" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+        <text x="67" y="90" text-anchor="middle" fill="#f1f5f9" font-size="22" font-family="Inter,sans-serif">🎬</text>
+        <text x="67" y="115" text-anchor="middle" fill="#f1f5f9" font-size="13" font-family="Inter,sans-serif" font-weight="600">Video</text>
+        <text x="67" y="132" text-anchor="middle" fill="#64748b" font-size="10.5" font-family="Inter,sans-serif">Frame por frame</text>
+
+        <!-- Arrow 1 -->
+        <line x1="132" y1="95" x2="162" y2="95" stroke="#f97316" stroke-width="2"/>
+        <polygon points="162,90 172,95 162,100" fill="#f97316"/>
+
+        <!-- Box 2: YOLO -->
+        <rect x="172" y="30" width="160" height="130" rx="10" fill="#0d1424" stroke="#4f9cf9" stroke-width="1.5"/>
+        <text x="252" y="56" text-anchor="middle" fill="#f97316" font-size="9.5" font-family="Inter,sans-serif" font-weight="700" letter-spacing="1.5">CAPA 1</text>
+        <text x="252" y="78" text-anchor="middle" fill="#ffffff" font-size="15" font-family="Inter,sans-serif" font-weight="700">YOLOv8-cls</text>
+        <text x="252" y="98" text-anchor="middle" fill="#64748b" font-size="11" font-family="Inter,sans-serif">Clasificación global</text>
+        <rect x="192" y="110" width="120" height="26" rx="6" fill="rgba(34,197,94,0.1)"/>
+        <text x="252" y="127" text-anchor="middle" fill="#22c55e" font-size="11.5" font-family="Inter,sans-serif" font-weight="700">99.4% Top-1</text>
+
+        <!-- Arrow 2 -->
+        <line x1="332" y1="95" x2="362" y2="95" stroke="#f97316" stroke-width="2"/>
+        <polygon points="362,90 372,95 362,100" fill="#f97316"/>
+        <text x="352" y="83" text-anchor="middle" fill="#475569" font-size="9.5" font-family="Inter,sans-serif">ejercicio</text>
+
+        <!-- Box 3: MediaPipe -->
+        <rect x="372" y="30" width="165" height="130" rx="10" fill="#0d1424" stroke="#4f9cf9" stroke-width="1.5"/>
+        <text x="454" y="56" text-anchor="middle" fill="#f97316" font-size="9.5" font-family="Inter,sans-serif" font-weight="700" letter-spacing="1.5">CAPA 2</text>
+        <text x="454" y="78" text-anchor="middle" fill="#ffffff" font-size="15" font-family="Inter,sans-serif" font-weight="700">MediaPipe</text>
+        <text x="454" y="97" text-anchor="middle" fill="#64748b" font-size="11" font-family="Inter,sans-serif">BlazePose</text>
+        <rect x="392" y="110" width="124" height="26" rx="6" fill="rgba(79,156,249,0.1)"/>
+        <text x="454" y="127" text-anchor="middle" fill="#4f9cf9" font-size="11.5" font-family="Inter,sans-serif" font-weight="700">33 Keypoints 3D</text>
+
+        <!-- Arrow 3 -->
+        <line x1="537" y1="95" x2="567" y2="95" stroke="#f97316" stroke-width="2"/>
+        <polygon points="567,90 577,95 567,100" fill="#f97316"/>
+        <text x="557" y="83" text-anchor="middle" fill="#475569" font-size="9.5" font-family="Inter,sans-serif">ángulos</text>
+
+        <!-- Box 4: Motor -->
+        <rect x="577" y="30" width="175" height="130" rx="10" fill="#0d1424" stroke="#f97316" stroke-width="1.5"/>
+        <text x="664" y="56" text-anchor="middle" fill="#f97316" font-size="9.5" font-family="Inter,sans-serif" font-weight="700" letter-spacing="1.5">REGLAS</text>
+        <text x="664" y="76" text-anchor="middle" fill="#ffffff" font-size="14" font-family="Inter,sans-serif" font-weight="700">Motor Biomecánico</text>
+        <text x="664" y="96" text-anchor="middle" fill="#64748b" font-size="11" font-family="Inter,sans-serif">Ángulos articulares</text>
+        <text x="664" y="112" text-anchor="middle" fill="#64748b" font-size="11" font-family="Inter,sans-serif">Umbrales por ejercicio</text>
+        <rect x="597" y="120" width="134" height="26" rx="6" fill="rgba(251,191,36,0.1)"/>
+        <text x="664" y="137" text-anchor="middle" fill="#fbbf24" font-size="11.5" font-family="Inter,sans-serif" font-weight="700">+ Contador de Reps</text>
+
+        <!-- Arrow 4 -->
+        <line x1="752" y1="95" x2="782" y2="95" stroke="#f97316" stroke-width="2"/>
+        <polygon points="782,90 792,95 782,100" fill="#f97316"/>
+
+        <!-- Box 5: Output -->
+        <rect x="792" y="20" width="162" height="155" rx="10" fill="#071f10" stroke="#22c55e" stroke-width="1.5"/>
+        <text x="873" y="48" text-anchor="middle" fill="#22c55e" font-size="12" font-family="Inter,sans-serif" font-weight="700">✓  OK</text>
+        <text x="873" y="64" text-anchor="middle" fill="#64748b" font-size="9.5" font-family="Inter,sans-serif">Técnica correcta</text>
+        <line x1="802" y1="74" x2="944" y2="74" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+        <text x="873" y="91" text-anchor="middle" fill="#fb923c" font-size="12" font-family="Inter,sans-serif" font-weight="700">~  MEJORAR</text>
+        <text x="873" y="107" text-anchor="middle" fill="#64748b" font-size="9.5" font-family="Inter,sans-serif">Forma mejorable</text>
+        <line x1="802" y1="116" x2="944" y2="116" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+        <text x="873" y="133" text-anchor="middle" fill="#ef4444" font-size="12" font-family="Inter,sans-serif" font-weight="700">✗  MAL</text>
+        <text x="873" y="149" text-anchor="middle" fill="#64748b" font-size="9.5" font-family="Inter,sans-serif">Corrección necesaria</text>
+        <line x1="802" y1="157" x2="944" y2="157" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+        <text x="873" y="168" text-anchor="middle" fill="#94a3b8" font-size="10" font-family="Inter,sans-serif" font-weight="600">?  SIN_DATO</text>
+    </svg>
+    <p style="font-size:0.78em;color:var(--muted);text-align:center;">Pipeline completo corriendo en tiempo real · &lt;50ms por frame · Edge computing</p>
+</section>
+
+<!-- ④ ¿POR QUÉ HÍBRIDO? ────────────────────────────── -->
+<section data-background-color="#080c14">
+    <h2>¿Por qué un enfoque híbrido?</h2>
+    <table style="margin-top:4px;">
+        <tr>
+            <th style="width:30%;">Aspecto</th>
+            <th style="width:35%;color:#ef4444;background:rgba(239,68,68,0.08);">Solo Deep Learning</th>
+            <th style="width:35%;color:#22c55e;background:rgba(34,197,94,0.08);">Nuestro Híbrido</th>
+        </tr>
+        <tr>
+            <td><strong>Interpretabilidad</strong></td>
+            <td><span class="badge-red">✗</span> Caja negra</td>
+            <td><span class="badge-green">✓</span> Reglas explícitas</td>
+        </tr>
+        <tr>
+            <td><strong>Robustez al fondo</strong></td>
+            <td><span class="badge-yellow">⚠</span> Memoriza el gym</td>
+            <td><span class="badge-green">✓</span> Agnóstico</td>
+        </tr>
+        <tr>
+            <td><strong>Latencia</strong></td>
+            <td><span class="badge-yellow">⚠</span> Modelos pesados</td>
+            <td><span class="badge-green">✓</span> &lt;50ms real-time</td>
+        </tr>
+        <tr>
+            <td><strong>Tipo de error</strong></td>
+            <td><span class="badge-yellow">⚠</span> Impredecible</td>
+            <td><span class="badge-green">✓</span> Determinista</td>
+        </tr>
+        <tr>
+            <td><strong>Incertidumbre</strong></td>
+            <td><span class="badge-red">✗</span> Binario forzado</td>
+            <td><span class="badge-green">✓</span> 4 estados lógicos</td>
+        </tr>
+        <tr>
+            <td><strong>Datos de forma</strong></td>
+            <td><span class="badge-red">✗</span> Requiere miles de videos etiquetados "buena/mala forma"</td>
+            <td><span class="badge-green">✓</span> Reglas biomecánicas = zero labels de forma necesarios</td>
+        </tr>
+    </table>
+</section>
+
+<!-- ⑤ YOLO RESULTADOS ─────────────────────────────── -->
+<section data-background-color="#080c14">
+    <h2>Clasificación YOLO: Resultados</h2>
+    <table style="margin-top:4px;">
+        <tr>
+            <th>Modelo</th>
+            <th>Parámetros</th>
+            <th>Top-1 (mejor)</th>
+            <th>Top-1 (final)</th>
+            <th>Épocas</th>
+        </tr>
+        <tr>
+            <td><strong>YOLOv8n-cls</strong></td>
+            <td>2.7 M</td>
+            <td><span class="badge-green">99.4%</span></td>
+            <td><span class="badge-green">99.4%</span></td>
+            <td>50</td>
+        </tr>
+        <tr>
+            <td><strong>YOLOv8s-cls</strong></td>
+            <td>6.9 M</td>
+            <td><span class="badge-green">100%</span></td>
+            <td><span class="badge-green">99.4%</span></td>
+            <td>15</td>
+        </tr>
+        <tr>
+            <td><strong>YOLO11n-cls</strong></td>
+            <td>2.6 M</td>
+            <td><span class="badge-green">100%</span></td>
+            <td><span class="badge-green">99.4%</span></td>
+            <td>15</td>
+        </tr>
+    </table>
+    <p style="font-size:0.72em;color:var(--muted);margin-top:6px;">Entrenados en RTX 3070 Laptop · Los 3 modelos completaron exitosamente</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:12px;">
+        <div class="card-accent">
+            <p style="margin:0 0 4px;font-size:0.8em;font-weight:700;color:var(--orange);">Conclusión</p>
+            <p style="margin:0;font-size:0.85em;">La clasificación está resuelta con &lt;3M params. El desafío real es el análisis biomecánico.</p>
+        </div>
+        <div class="card" style="border-color:rgba(239,68,68,0.3);background:rgba(239,68,68,0.05);">
+            <p style="margin:0 0 4px;font-size:0.8em;font-weight:700;color:#ef4444;">⚠ Bug crítico del dataset</p>
+            <p style="margin:0;font-size:0.82em;color:#94a3b8;">Carpetas vacías en Roboflow → PyTorch ImageFolder desplaza el ground truth → <strong style="color:#ffffff;">0% Top-1</strong> con loss normal. Fix: reestructuración del árbol. Resultado: <strong style="color:#22c55e;">99.4%</strong>.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ⑥ BIOMECÁNICA ────────────────────────────────── -->
+<section data-background-color="#080c14">
+    <h2>Análisis Biomecánico: Reglas por Ejercicio</h2>
+    <div style="display:grid;grid-template-columns:1fr 1.6fr;gap:20px;align-items:start;">
+    <div>
+        <img src="../images/Comparison-3.jpg" style="width:100%;border-radius:8px;border:1px solid var(--border);margin-bottom:8px;" alt="Squat angle comparison">
+        <p style="font-size:0.65em;color:var(--muted);text-align:center;margin:0;">Hip · Knee · Back angle varían según variante — Lon Kilgore</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="card">
+                <p style="margin:0 0 8px;font-weight:700;color:var(--orange);">🏋️ Sentadilla</p>
+                <p style="margin:0;font-size:0.85em;color:#94a3b8;">Rodilla &lt; 90° &nbsp;·&nbsp; Torso ∈ [45°, 100°]</p>
+            </div>
+            <div class="card">
+                <p style="margin:0 0 8px;font-weight:700;color:var(--orange);">💪 Flexión</p>
+                <p style="margin:0;font-size:0.85em;color:#94a3b8;">Codo &lt; 110° &nbsp;·&nbsp; Alineación hombro-cadera-rodilla &gt; 150°</p>
+            </div>
+            <div class="card">
+                <p style="margin:0 0 8px;font-weight:700;color:var(--orange);">🔩 Peso Muerto</p>
+                <p style="margin:0;font-size:0.85em;color:#94a3b8;">Espalda-Cadera-Rodilla &gt; 155° &nbsp;·&nbsp; Sin flexión lumbar</p>
+            </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:14px;">
+            <div class="card" style="border-color:rgba(34,197,94,0.2);">
+                <p style="margin:0 0 10px;font-weight:700;color:#94a3b8;font-size:0.8em;text-transform:uppercase;letter-spacing:0.06em;">Lógica de 4 estados + coaching</p>
+                <p style="margin:4px 0;font-size:0.88em;"><span class="badge-green">✓ OK</span> &nbsp;— Técnica correcta, rep válida</p>
+                <p style="margin:4px 0;font-size:0.88em;"><span class="badge-orange">~ MEJORAR</span> &nbsp;— Forma aceptable, mensaje específico</p>
+                <p style="margin:4px 0;font-size:0.88em;"><span class="badge-red">✗ MAL</span> &nbsp;— Corrección necesaria (e.g., "Espalda redondeada!")</p>
+                <p style="margin:4px 0;font-size:0.88em;"><span style="color:#94a3b8;font-weight:700;">? SIN_DATO</span> &nbsp;— Visibilidad baja (umbral 0.3–0.4)</p>
+            </div>
+            <div class="card">
+                <p style="margin:0 0 10px;font-weight:700;color:#94a3b8;font-size:0.8em;text-transform:uppercase;letter-spacing:0.06em;">Contador de Repeticiones</p>
+                <p style="margin:2px 0;font-size:0.82em;color:#94a3b8;">→ Máquina de estados up/down por ángulo crítico</p>
+                <p style="margin:2px 0;font-size:0.82em;color:#94a3b8;">→ Media móvil de 5 frames para suavizar el ángulo</p>
+                <p style="margin:2px 0;font-size:0.82em;color:#94a3b8;">→ Histeresis: umbral de bajada ≠ umbral de subida</p>
+                <p style="margin:2px 0;font-size:0.82em;color:#94a3b8;">→ Votación mayoritaria de 10 frames en estado de forma</p>
+                <p style="margin:2px 0;font-size:0.82em;color:#94a3b8;">→ Detección de dirección: suprime "baja más" al subir</p>
+            </div>
+        </div>
+    </div>
+    </div>
+</section>
+
+<!-- ⑦ RESULTADOS ─────────────────────────────────── -->
+<section data-background-color="#080c14">
+    <h2>Resultados: Pipeline Completo</h2>
+    <table style="margin-top:4px;font-size:0.85em;">
+        <tr>
+            <th>Video</th>
+            <th>Frames</th>
+            <th>% Forma OK</th>
+            <th>Clasificación YOLO</th>
+        </tr>
+        <tr>
+            <td><strong>Sentadilla (máquina Smith)</strong></td>
+            <td>297</td>
+            <td><span class="badge-green">67.3%</span></td>
+            <td><span class="badge-green">100% correcto</span></td>
+        </tr>
+        <tr>
+            <td><strong>Sentadilla (peso libre)</strong></td>
+            <td>1,039</td>
+            <td><span class="badge-red">3.7%</span></td>
+            <td><span class="badge-green">100% correcto</span></td>
+        </tr>
+        <tr>
+            <td><strong>Flexiones</strong></td>
+            <td>283</td>
+            <td><span class="badge-blue">35.7%</span></td>
+            <td><span class="badge-green">100% correcto</span></td>
+        </tr>
+        <tr>
+            <td><strong>Peso Muerto convencional #1</strong></td>
+            <td>1,630</td>
+            <td><span class="badge-blue">11.7%</span></td>
+            <td><span class="badge-green">100% correcto</span></td>
+        </tr>
+        <tr>
+            <td><strong>Peso Muerto convencional #2</strong></td>
+            <td>1,719</td>
+            <td><span class="badge-blue">15.5%</span></td>
+            <td><span class="badge-green">100% correcto</span></td>
+        </tr>
+    </table>
+    <div class="card-accent" style="margin-top:16px;">
+        <p style="margin:0;font-size:0.85em;"><span class="badge-orange">Nota:</span> Los % bajos de OK en peso muerto y flexión reflejan técnica real deficiente detectada correctamente — no falsos positivos. El sistema funciona.</p>
+    </div>
+</section>
+
+<!-- ⑧ CONCLUSIONES ───────────────────────────────── -->
+<section data-background-color="#080c14">
+    <h2>Conclusiones Clave</h2>
+    <div style="display:flex;flex-direction:column;gap:14px;margin-top:8px;">
+        <div style="display:flex;align-items:flex-start;gap:16px;">
+            <span style="color:var(--orange);font-weight:900;font-size:1.1em;min-width:28px;">1.</span>
+            <p style="margin:0;font-size:0.92em;line-height:1.5;"><strong style="color:var(--text);">Heurísticas + IA superan IA pura</strong> en dominios especializados con datos limitados o desbalanceados.</p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:16px;">
+            <span style="color:var(--orange);font-weight:900;font-size:1.1em;min-width:28px;">2.</span>
+            <p style="margin:0;font-size:0.92em;line-height:1.5;"><strong style="color:var(--text);">4 estados lógicos</strong> (OK / MEJORAR / MAL / SIN_DATO) con coaching específico — más útil que clasificación binaria y más honesto cuando la visibilidad es baja.</p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:16px;">
+            <span style="color:var(--orange);font-weight:900;font-size:1.1em;min-width:28px;">3.</span>
+            <p style="margin:0;font-size:0.92em;line-height:1.5;"><strong style="color:var(--text);">Edge computing viable:</strong> YOLOv8n (2.7M params) + MediaPipe → mobile-ready, &lt;50ms por frame.</p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:16px;">
+            <span style="color:var(--orange);font-weight:900;font-size:1.1em;min-width:28px;">4.</span>
+            <p style="margin:0;font-size:0.92em;line-height:1.5;"><strong style="color:var(--text);">Integridad del split</strong> es más crítica que arquitectura: 0% → 99.4% Top-1 con un solo fix estructural.</p>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:16px;">
+            <span style="color:var(--orange);font-weight:900;font-size:1.1em;min-width:28px;">5.</span>
+            <p style="margin:0;font-size:0.92em;line-height:1.5;"><strong style="color:var(--text);">Tracking angular es escalable:</strong> el modelo de picos en señal de ángulo funciona para cualquier ejercicio articular.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ⑨ DEMO ──────────────────────────────────────── -->
+<section data-background-color="#080c14">
+    <h2>Demostración en Vivo</h2>
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+        <button class="demo-btn active" id="btn-squat"     onclick="switchVideo('squat','squat_demo_evaluated_h264')">🏋️ &nbsp;Sentadilla</button>
+        <button class="demo-btn"        id="btn-squat2"    onclick="switchVideo('squat2','squat2_demo_evaluated_h264')">🏋️ &nbsp;Back Squat</button>
+        <button class="demo-btn"        id="btn-pushup"    onclick="switchVideo('pushup','pushup_demo_evaluated_h264')">💪 &nbsp;Flexión</button>
+        <button class="demo-btn"        id="btn-deadlift"  onclick="switchVideo('deadlift','deadlift_old_evaluated_h264')">🔩 &nbsp;Peso Muerto</button>
+        <button class="demo-btn"        id="btn-deadlift2" onclick="switchVideo('deadlift2','deadlift_new_evaluated_h264')">🔩 &nbsp;Peso Muerto 2</button>
+        <button class="demo-btn"        id="btn-barpath"   onclick="switchVideo('barpath','deadlift_barpath_test_h264')" style="border-color:rgba(0,255,255,0.3);color:#00ffff;">📍 &nbsp;Bar Path</button>
+    </div>
+    <video id="demo-video" controls style="max-height:340px;">
+        <source src="../demo_results/squat_demo_evaluated_h264.mp4" type="video/mp4">
+    </video>
+    <p style="font-size:0.72em;color:var(--muted);margin-top:8px;">
+        <span style="color:#22c55e;font-weight:700;">■</span> OK &nbsp;·&nbsp;
+        <span style="color:#fb923c;font-weight:700;">■</span> MEJORAR &nbsp;·&nbsp;
+        <span style="color:#ef4444;font-weight:700;">■</span> MAL &nbsp;·&nbsp;
+        <span style="color:#94a3b8;font-weight:700;">■</span> SIN_DATO &nbsp;·&nbsp;
+        Coaching + contador de reps en tiempo real
+    </p>
+    <script>
+        var demoIds = ['squat','squat2','pushup','deadlift','deadlift2','barpath'];
+        function switchVideo(id, filename) {
+            var v = document.getElementById('demo-video');
+            v.src = '../demo_results/' + filename + '.mp4';
+            v.play();
+            demoIds.forEach(function(e) {
+                document.getElementById('btn-'+e).classList.toggle('active', e === id);
+            });
+        }
+    </script>
+</section>
+
+<!-- ⑩ LIMITACIONES ──────────────────────────────── -->
+<section data-background-color="#080c14">
+    <h2>Limitaciones y Trabajo Futuro</h2>
+    <div class="two-col">
+        <div>
+            <p style="font-size:0.8em;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:16px;">Limitaciones actuales</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <div class="card" style="padding:14px 18px;">
+                    <p style="margin:0;font-size:0.85em;"><span class="badge-red">✗</span>&nbsp; Solo 3 ejercicios implementados</p>
+                </div>
+                <div class="card" style="padding:14px 18px;">
+                    <p style="margin:0;font-size:0.85em;"><span class="badge-red">✗</span>&nbsp; Requiere vista lateral clara</p>
+                </div>
+                <div class="card" style="padding:14px 18px;">
+                    <p style="margin:0;font-size:0.85em;"><span class="badge-red">✗</span>&nbsp; Una persona por frame</p>
+                </div>
+                <div class="card" style="padding:14px 18px;">
+                    <p style="margin:0;font-size:0.85em;"><span class="badge-red">✗</span>&nbsp; Split frame-level → posible leakage temporal entre train y test</p>
+                </div>
+            </div>
+        </div>
+        <div>
+            <p style="font-size:0.8em;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:16px;">Próximos pasos</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <div class="card" style="padding:14px 18px;">
+                    <p style="margin:0;font-size:0.85em;"><span class="badge-green">→</span>&nbsp; Ampliar a 10+ ejercicios</p>
+                </div>
+                <div class="card" style="padding:14px 18px;">
+                    <p style="margin:0;font-size:0.85em;"><span class="badge-green">→</span>&nbsp; Multi-persona con ByteTrack</p>
+                </div>
+                <div class="card" style="padding:14px 18px;">
+                    <p style="margin:0;font-size:0.85em;"><span class="badge-green">→</span>&nbsp; App móvil + integración wearables</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ⑪ CIERRE ─────────────────────────────────────── -->
+<section class="title-slide" data-background-color="#071333" style="text-align:center !important;">
+    <h1 style="font-size:3em;">¿Preguntas?</h1>
+    <p style="margin-top:48px;color:#64748b;font-size:0.82em;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;">Repositorio</p>
+    <code style="display:inline-block;margin-top:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:12px 24px;border-radius:8px;color:#f1f5f9;font-size:0.85em;">
+        github.com/magabohorquez/gym_form_checker
+    </code>
+    <p style="margin-top:56px;color:#334155;font-size:0.78em;">
+        Visión por Computadora II · CEIA · Universidad de Buenos Aires
+    </p>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        transition: 'fade',
+        transitionSpeed: 'fast',
+        controls: true,
+        progress: true,
+        center: true,
+        keyboard: true,
+        width: 1100,
+        height: 680,
+        margin: 0.06,
+        minScale: 0.3,
+        maxScale: 2.0,
+        slideNumber: 'c/t',
+    });
+</script>
+</body>
+</html>

@@ -10,6 +10,7 @@ dist/
 
 # Virtual environments
 .venv/
+env_gym/
 venv/
 env/
 
@@ -27,14 +28,20 @@ data/valid/
 data/test/
 exercise-frame-labelling*/
 models/*.pt
+*.pt
 runs/
+notebooks/runs/
+paper/notebooks/
 
-# Videos (ignorar videos de prueba pesados, mantener .gitkeep u otros trackers)
+# Videos (demasiado pesados para GitHub >100MB)
 videos/*.mp4
 videos/*.avi
 videos/*.mov
+videos/*.m4a
+videos/*.m4v
 !videos/.gitkeep
-!videos/demo_2min.mp4
+demo_results/*.avi
+demo_results/*.mov
 
 # API keys
 .env
@@ -53,3 +60,20 @@ missfont.log
 .vscode/
 .idea/
 .uv/
+
+# Internal documentation (not for GitHub)
+docs/
+
+# Temporary / generated files
+train_yolo11n.py
+training_yolo11n.log
+demo_run_output.txt
+extract_demo_metrics.py
+concat.txt
+=0.10
+*.log
+download.log
+download_err.log
+out.log
+training.log
+training_err.log
